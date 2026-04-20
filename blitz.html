@@ -406,28 +406,6 @@ function spawnHomingEnemy(w) {
   });
 }
 
-function spawnSpinner(w) {
-  const cx = W/2 + (Math.random()-0.5)*W*0.3;
-  const cy = H/2 + (Math.random()-0.5)*H*0.3;
-  const count = 6;
-  const radius = 80 + Math.random()*60;
-  for (let i = 0; i < count; i++) {
-    const angle = (i / count) * Math.PI * 2;
-    enemies.push({
-      x: cx + Math.cos(angle)*radius,
-      y: cy + Math.sin(angle)*radius,
-      vx: 0, vy: 0,
-      r: 8,
-      type: 'spinner',
-      cx, cy,
-      orbitAngle: angle,
-      orbitRadius: radius,
-      orbitSpeed: (0.02 + w * 0.003) * (Math.random() < 0.5 ? 1 : -1),
-      hue: 180,
-      pulse: angle
-    });
-  }
-}
 
 function showWaveAnnounce(w) {
   waveAnnounce.textContent = `WAVE ${w}`;
@@ -532,10 +510,6 @@ function update() {
       e.vy += (dy/dist) * e.speed * 0.12;
       const spd = Math.sqrt(e.vx*e.vx + e.vy*e.vy);
       if (spd > e.speed) { e.vx = e.vx/spd*e.speed; e.vy = e.vy/spd*e.speed; }
-    } else if (e.type === 'spinner') {
-      e.orbitAngle += e.orbitSpeed;
-      e.x = e.cx + Math.cos(e.orbitAngle) * e.orbitRadius;
-      e.y = e.cy + Math.sin(e.orbitAngle) * e.orbitRadius;
     } else {
       e.x += e.vx;
       e.y += e.vy;
@@ -543,8 +517,8 @@ function update() {
 
     e.pulse += 0.08;
 
-    // Remove if far off screen (non-spinner)
-    if (e.type !== 'spinner' && e.type !== 'homing') {
+    // Remove if far off screen (non-homing)
+    if (e.type !== 'homing') {
       if (e.x < -100 || e.x > W+100 || e.y < -100 || e.y > H+100) {
         enemies.splice(i, 1);
       }
@@ -682,9 +656,7 @@ function draw() {
     const r = e.r * pulse;
 
     let color, glowColor;
-    if (e.type === 'spinner') {
-      color = '#ff00ff'; glowColor = '#ff00ff';
-    } else if (e.type === 'homing') {
+    if (e.type === 'homing') {
       color = '#ff8800'; glowColor = '#ff8800';
     } else if (e.hue === 280) {
       color = '#cc44ff'; glowColor = '#cc44ff';
