@@ -284,6 +284,7 @@ let invincible = false, invTimer = 0;
 let waveTimer = 0, waveInterval = 600; // frames
 let scoreAccum = 0;
 let comboCount = 0, comboTimer = 0;
+let prevEnemyCount = 0;
 
 // Elements
 const scoreEl = document.getElementById('score-val');
@@ -323,6 +324,7 @@ function initGame() {
   bullets = [];
   invincible = false;
   invTimer = 0;
+  prevEnemyCount = 0;
 
   player = {
     x: W / 2, y: H / 2,
@@ -517,12 +519,13 @@ function update() {
 
   // Wave progression
   waveTimer++;
-  if (enemies.length === 0 || waveTimer >= waveInterval) {
+  if ((prevEnemyCount > 0 && enemies.length === 0) || waveTimer >= waveInterval) {
     waveTimer = 0;
     wave++;
     waveInterval = Math.max(300, 600 - wave * 20);
     spawnWave(wave);
   }
+  prevEnemyCount = enemies.length;
 
   // Update enemies
   enemies.forEach((e, i) => {
